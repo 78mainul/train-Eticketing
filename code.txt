@@ -1,0 +1,172 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm> // Required for find_if
+using namespace std;
+
+// Structures for storing train, passenger, and ticket information
+struct Train {
+    int trainNumber;
+    string name;
+    string route;
+    string departureTime;
+    string arrivalTime;
+    int totalSeats;
+    int availableSeats;
+};
+
+struct Passenger {
+    int id;
+    string name;
+    int age;
+    string contact;
+};
+
+struct Ticket {
+    int ticketNumber;
+    int trainNumber;
+    string passengerName;
+    int seatNumber;
+};
+
+// Global data storage
+vector<Train> trains;
+vector<Ticket> tickets;
+int trainIdCounter = 1;
+int ticketIdCounter = 1;
+
+// Function prototypes
+void addTrain();
+void manageSchedule();
+void bookTicket();
+void checkAvailability();
+
+int main() {
+    int choice;
+
+    while (true) {
+        cout << "\n--- Railway Management System ---\n";
+        cout << "1. Add Train\n";
+        cout << "2. Manage Schedule\n";
+        cout << "3. Book Ticket\n";
+        cout << "4. Check Seat Availability\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            addTrain();
+            break;
+        case 2:
+            manageSchedule();
+            break;
+        case 3:
+            bookTicket();
+            break;
+        case 4:
+            checkAvailability();
+            break;
+        case 5:
+            cout << "Exiting...\n";
+            return 0;
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    }
+}
+
+void addTrain() {
+    Train t;
+    cout << "Enter train number: ";
+    cin >> t.trainNumber;
+    cin.ignore();
+    cout << "Enter train name: ";
+    getline(cin, t.name);
+    cout << "Enter route: ";
+    getline(cin, t.route);
+    cout << "Enter departure time: ";
+    getline(cin, t.departureTime);
+    cout << "Enter arrival time: ";
+    getline(cin, t.arrivalTime);
+    cout << "Enter total seats: ";
+    cin >> t.totalSeats;
+    t.availableSeats = t.totalSeats;
+
+    trains.push_back(t);
+    cout << "Train added successfully.\n";
+}
+
+void manageSchedule() {
+    cout << "\n--- Train Schedule ---\n";
+    for (const auto &t : trains) {
+        cout << "Train Number: " << t.trainNumber << "\n";
+        cout << "Name: " << t.name << "\n";
+        cout << "Route: " << t.route << "\n";
+        cout << "Departure: " << t.departureTime << "\n";
+        cout << "Arrival: " << t.arrivalTime << "\n";
+        cout << "Available Seats: " << t.availableSeats << "/" << t.totalSeats << "\n\n";
+    }
+}
+
+void bookTicket() {
+    int trainNumber;
+    Passenger p;
+    cout << "Enter train number: ";
+    cin >> trainNumber;
+
+    auto it = find_if(trains.begin(), trains.end(), [trainNumber](const Train &t) {
+        return t.trainNumber == trainNumber;
+    });
+
+    if (it == trains.end()) {
+        cout << "Train not found.\n";
+        return;
+    }
+
+    if (it->availableSeats <= 0) {
+        cout << "No seats available.\n";
+        return;
+    }
+
+    cout << "Enter passenger name: ";
+    cin.ignore();
+    getline(cin, p.name);
+    cout << "Enter passenger age: ";
+    cin >> p.age;
+    cout << "Enter contact details: ";
+    cin.ignore();
+    getline(cin, p.contact);
+
+    Ticket ticket;
+    ticket.ticketNumber = ticketIdCounter++;
+    ticket.trainNumber = trainNumber;
+    ticket.passengerName = p.name;
+    ticket.seatNumber = it->totalSeats - it->availableSeats + 1;
+
+    tickets.push_back(ticket);
+    it->availableSeats--;
+
+    cout << "Ticket booked successfully.\n";
+    cout << "Ticket Number: " << ticket.ticketNumber << "\n";
+    cout << "Seat Number: " << ticket.seatNumber << "\n";
+}
+
+void checkAvailability() {
+    int trainNumber;
+    cout << "Enter train number: ";
+    cin >> trainNumber;
+
+    auto it = find_if(trains.begin(), trains.end(), [trainNumber](const Train &t) {
+        return t.trainNumber == trainNumber;
+    });
+
+    if (it == trains.end()) {
+        cout << "Train not found.\n";
+        return;
+    }
+
+    cout << "Available Seats for Train " << trainNumber << ": " << it->availableSeats << "/" << it->totalSeats << "\n";
+}
+
