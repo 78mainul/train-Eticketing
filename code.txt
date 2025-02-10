@@ -2,10 +2,9 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <algorithm> // Required for find_if
+#include <algorithm> 
 using namespace std;
 
-// Structures for storing train, passenger, and ticket information
 struct Train {
     int trainNumber;
     string name;
@@ -30,13 +29,13 @@ struct Ticket {
     int seatNumber;
 };
 
-// Global data storage
+
 vector<Train> trains;
 vector<Ticket> tickets;
 int trainIdCounter = 1;
 int ticketIdCounter = 1;
 
-// Function prototypes
+
 void addTrain();
 void manageSchedule();
 void bookTicket();
